@@ -1,12 +1,12 @@
 def project = 'my-gcp101'
-def  appName = 'edu-api'
+def  appName = 'kube-cicd'
 def  feSvcName = "${appName}-svc"
 def  imageTag = "gcr.io/${project}/${appName}:${env.BRANCH_NAME}.${env.BUILD_NUMBER}"
 
 pipeline {
   agent {
     kubernetes {
-      label 'edu-api'
+      label '${appName}'
       defaultContainer 'jnlp'
       yaml """
 		apiVersion: v1
@@ -50,8 +50,8 @@ pipeline {
       steps {
         container('kubectl') {
           // Change deployed image in canary to the one we just built         
-          sh("kubectl --namespace=prd apply -f k8s/edu-api-service.yaml")
-          sh("kubectl --namespace=prd apply -f k8s/edu-api-canary")
+          sh("kubectl --namespace=prd apply -f k8s/${appName}-service.yaml")
+          sh("kubectl --namespace=prd apply -f k8s/${appName}-canary")
           sh("echo http://`kubectl --namespace=prd get service/${feSvcName} -o jsonpath='{.status.loadBalancer.ingress[0].ip}'` > ${feSvcName}")
         } 
       }
@@ -62,8 +62,8 @@ pipeline {
       steps{
         container('kubectl') {
         // Change deployed image in canary to the one we just built
-          sh("kubectl --namespace=prd apply -f k8s/edu-api-service.yaml")
-          sh("kubectl --namespace=prd apply -f k8s/edu-api-prd.yaml")
+          sh("kubectl --namespace=prd apply -f k8s/${appName}-service.yaml")
+          sh("kubectl --namespace=prd apply -f k8s/${appName}-prd.yaml")
           sh("echo http://`kubectl --namespace=prd get service/${feSvcName} -o jsonpath='{.status.loadBalancer.ingress[0].ip}'` > ${feSvcName}")
         }
       }
@@ -81,7 +81,7 @@ pipeline {
           // Don't use public load balancing for development branches
          
           
-          sh("kubectl --namespace=${env.BRANCH_NAME} apply -f k8s/edu-api-service.yaml")
+          sh("kubectl --namespace=${env.BRANCH_NAME} apply -f k8s/${appName}-service.yaml")
           sh("kubectl --namespace=${env.BRANCH_NAME} apply -f k8s/dev/")
           echo 'To access your environment run `kubectl proxy`'
           echo "Then access your service via http://localhost:8001/api/v1/proxy/namespaces/${env.BRANCH_NAME}/services/${feSvcName}:80/"

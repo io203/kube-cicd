@@ -1,22 +1,22 @@
----
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: edu-api-canary
+  name: kube-cicd-prd
  
 spec:
-  replicas: 1
+  replicas: 4
   template:
     metadata:
       name: backend
       labels:
-        app: edu-api
+        app: kube-cicd
         role: backend
         env: prd     
     spec:
       containers:
-      - name: edu-api
-        image: asia.gcr.io/my-gcp101/edu-api:v2
+      - name: kube-cicd
+        image: asia.gcr.io/my-gcp101/kube-cicd:v1
         resources:
           limits:
             memory: "500Mi"
@@ -25,3 +25,5 @@ spec:
         ports:
         - name: backend
           containerPort: 8009
+
+ 
