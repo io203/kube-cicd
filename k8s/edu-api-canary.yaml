@@ -1,0 +1,27 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: edu-api-canary
+ 
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: backend
+      labels:
+        app: edu-api
+        role: backend
+        env: prd     
+    spec:
+      containers:
+      - name: edu-api
+        image: asia.gcr.io/my-gcp101/edu-api:v2
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "100m"
+        imagePullPolicy: Always
+        ports:
+        - name: backend
+          containerPort: 8009
