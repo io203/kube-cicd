@@ -49,9 +49,9 @@ spec:
       when { branch 'canary' }
       steps {
         container('kubectl') {
-          // Change deployed image in canary to the one we just built         
-          sh("kubectl --namespace=prd apply -f k8s/${appName}-service.yaml")
-          sh("kubectl --namespace=prd apply -f k8s/${appName}-canary")
+          // Change deployed image in canary to the one we just built   
+          sh("sed -i.bak 's#asia.gcr.io/gcp-projectid/kube-cicd:1.0.0#${imageTag}#' ./k8s/canary/*.yaml")      
+          sh("kubectl --namespace=prd apply -f k8s/service/")
           sh("echo http://`kubectl --namespace=prd get service/${feSvcName} -o jsonpath='{.status.loadBalancer.ingress[0].ip}'` > ${feSvcName}")
         } 
       }
@@ -62,8 +62,8 @@ spec:
       steps{
         container('kubectl') {
         // Change deployed image in canary to the one we just built
-          sh("kubectl --namespace=prd apply -f k8s/${appName}-service.yaml")
-          sh("kubectl --namespace=prd apply -f k8s/${appName}-prd.yaml")
+          sh("sed -i.bak 's#asia.gcr.io/gcp-projectid/kube-cicd:1.0.0#${imageTag}#' ./k8s/prd/*.yaml")   
+          sh("kubectl --namespace=prd apply -f k8s/service/")
           sh("echo http://`kubectl --namespace=prd get service/${feSvcName} -o jsonpath='{.status.loadBalancer.ingress[0].ip}'` > ${feSvcName}")
         }
       }
@@ -80,9 +80,9 @@ spec:
           sh("kubectl get ns ${env.BRANCH_NAME} || kubectl create ns ${env.BRANCH_NAME}")
           // Don't use public load balancing for development branches
          
-          
-          sh("kubectl --namespace=${env.BRANCH_NAME} apply -f k8s/${appName}-service.yaml")
+          sh("sed -i.bak 's#asia.gcr.io/gcp-projectid/kube-cicd:1.0.0#${imageTag}#' ./k8s/dev/*.yaml")               
           sh("kubectl --namespace=${env.BRANCH_NAME} apply -f k8s/dev/")
+          sh("kubectl --namespace=${env.BRANCH_NAME} apply -f k8s/service/")
           echo 'To access your environment run `kubectl proxy`'
           echo "Then access your service via http://localhost:8001/api/v1/proxy/namespaces/${env.BRANCH_NAME}/services/${feSvcName}:80/"
         }
