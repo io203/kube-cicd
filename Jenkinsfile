@@ -1,7 +1,7 @@
 def project = 'my-gcp101'
 def  appName = 'kube-cicd'
 def  feSvcName = "${appName}-svc"
-def  imageTag = "gcr.io/${project}/${appName}:${env.BRANCH_NAME}.${env.BUILD_NUMBER}"
+def  imageTag = "asia.gcr.io/${project}/${appName}:${env.BRANCH_NAME}.${env.BUILD_NUMBER}"
 
 pipeline {
   agent {
