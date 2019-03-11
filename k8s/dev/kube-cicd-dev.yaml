@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: kube-cicd
-        image: asia.gcr.io/my-gcp101/kube-cicd:1.0.0
+        image: asia.gcr.io/gcp-projectid/kube-cicd:1.0.0
         resources:
           limits:
             memory: "500Mi"
