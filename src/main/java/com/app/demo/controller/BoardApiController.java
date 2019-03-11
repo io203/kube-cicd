@@ -23,7 +23,7 @@ public class BoardApiController {
 	}
 	@GetMapping("/version")
 	public String checkVersion() {
-		return "===========version: 1.0.0=========";
+		return "===========version: 2.0.0=========";
 	}
 
 }
